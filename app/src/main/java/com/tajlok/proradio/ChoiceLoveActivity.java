@@ -45,17 +45,25 @@ public class ChoiceLoveActivity extends AppCompatActivity {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentMain = new Intent(context, MainActivity.class);
-                startActivity(intentMain);
 
                 SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
                 @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
                 int radioNum = 0;
                 for (int i = 0; i < radioList.size(); i++) {
-                    editor.putInt("radio" + radioNum, radioList.get(i).getId());
-                    radioNum++;
+                    if (radioList.get(i).getUserLike()) {
+                        editor.putInt("radio" + radioNum, radioList.get(i).getId());
+                        radioNum++;
+                    }
                 }
                 editor.apply();
+
+                preferences = getSharedPreferences("notFirstLoad", Context.MODE_PRIVATE);
+                editor = preferences.edit();
+                editor.putBoolean("exist", true);
+                editor.apply();
+
+                Intent intentMain = new Intent(context, MainActivity.class);
+                startActivity(intentMain);
             }
         });
 
