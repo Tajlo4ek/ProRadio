@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
 import androidx.viewpager.widget.PagerAdapter;
 
@@ -33,8 +34,10 @@ public class ViewRadioAdapter extends PagerAdapter {
 
     private final List<Radio> radioList;
 
+    private boolean isChanged;
+
     enum ViewType {
-        LIKED("Понравившееся"),
+        LIKED("Понравившиеся"),
         ALL("Все"),
         POPULAR("Популярное");
 
@@ -49,6 +52,12 @@ public class ViewRadioAdapter extends PagerAdapter {
         mContext = activity;
         this.radioList = radioList;
         this.itemSize = itemSize;
+
+        isChanged = true;
+    }
+
+    public void SetChanged() {
+        isChanged = true;
     }
 
     @SuppressLint("ResourceAsColor")
@@ -60,6 +69,8 @@ public class ViewRadioAdapter extends PagerAdapter {
 
         List<Radio> radioList = new ArrayList<>();
         ViewType myType = ViewType.values()[position];
+
+        layout.setTag(myType);
 
         for (int i = 0; i < this.radioList.size(); i++) {
 
@@ -89,6 +100,16 @@ public class ViewRadioAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup viewGroup, int position, Object view) {
         //viewGroup.removeView((View) view);
+    }
+
+    public int getItemPosition(Object object) {
+
+        if (isChanged) {
+            isChanged = false;
+            return POSITION_NONE;
+        }
+
+        return POSITION_UNCHANGED;
     }
 
     @Override

@@ -29,6 +29,7 @@
             android:layout_gravity="center"
             android:layout_weight="0"
             android:autoText="true"
+            android:textAlignment="center"
             android:text="Стриминговое приложения для прослушивания радио"
             app:autoSizeTextType="uniform"
             android:textColor="@color/purple_200"/>

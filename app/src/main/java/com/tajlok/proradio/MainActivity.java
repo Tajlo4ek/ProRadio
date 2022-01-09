@@ -1,6 +1,7 @@
 package com.tajlok.proradio;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
@@ -11,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -21,6 +23,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -37,13 +40,26 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    final Object locker = new Object();
+
     MediaPlayer mediaPlayer;
     TextView tbRadioName;
-    Button startStopBtn;
+    ImageButton startStopBtn;
     LinearLayout groupPlay;
+    ViewPager viewPager;
+
+    List<Radio> radioList;
+
+    boolean isNeedShowPanel;
+    Radio nowPLay;
+    AnimationDrawable loadAnim;
+    ImageButton btnLike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         groupPlay = (LinearLayout) findViewById(R.id.groupPlay);
         groupPlay.setVisibility(View.INVISIBLE);
 
-        startStopBtn = (Button) findViewById(R.id.btnStartStop);
+        startStopBtn = (ImageButton) findViewById(R.id.btnStartStop);
         startStopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,8 +89,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        MainActivity context = this;
+
+        btnLike = (ImageButton) findViewById(R.id.btnLike);
+        btnLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (nowPLay == null) {
+                    return;
+                }
+
+                nowPLay.setUserLike(!nowPLay.getUserLike());
+                btnLike.setImageResource(nowPLay.getUserLike() ? R.drawable.liked : R.drawable.not_liked);
+                saveLiked();
+
+                ViewRadioAdapter adapter = (ViewRadioAdapter) viewPager.getAdapter();
+                if (adapter != null) {
+                    adapter.SetChanged();
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+        });
+
+
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                startPlay();
+            }
+        });
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -83,36 +130,80 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         thread.start();
+
+        isNeedShowPanel = false;
+        nowPLay = null;
+        showIsPlayed();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopPlay();
     }
 
     private void stopPlay() {
         mediaPlayer.stop();
-        groupPlay.setVisibility(View.INVISIBLE);
+        isNeedShowPanel = false;
+        showIsPlayed();
+        nowPLay = null;
     }
 
     private void pausePlay() {
         mediaPlayer.pause();
-        startStopBtn.setText("play");
+        isNeedShowPanel = true;
+        startStopBtn.setImageResource(R.drawable.play);
+        showIsPlayed();
     }
 
     private void startPlay() {
         mediaPlayer.start();
-        groupPlay.setVisibility(View.VISIBLE);
-        startStopBtn.setText("pause");
+        startStopBtn.setImageResource(R.drawable.pause);
+        showIsPlayed();
 
+        loadAnim.stop();
+    }
+
+    private void showIsPlayed() {
+        groupPlay.setVisibility(isNeedShowPanel ? View.VISIBLE : View.GONE);
+    }
+
+    private void saveLiked() {
+        SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
+        @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
+        int radioNum = 0;
+        for (int i = 0; i < radioList.size(); i++) {
+            if (radioList.get(i).getUserLike()) {
+                editor.putInt("radio" + radioNum, radioList.get(i).getId());
+                radioNum++;
+            }
+        }
+        editor.apply();
     }
 
     public void RunRadio(Radio radio) {
-        if (mediaPlayer.isPlaying()) {
-            stopPlay();
+
+        if (nowPLay != null && nowPLay.getRadioStreamUrl().equals(radio.getRadioStreamUrl())) {
+            return;
         }
 
+        stopPlay();
+        nowPLay = radio;
+
         try {
+            startStopBtn.setImageDrawable(null);
+            startStopBtn.setBackgroundResource(R.drawable.load_anim);
+            loadAnim = (AnimationDrawable) startStopBtn.getBackground();
+            loadAnim.start();
+            btnLike.setImageResource(nowPLay.getUserLike() ? R.drawable.liked : R.drawable.not_liked);
+            isNeedShowPanel = true;
+            showIsPlayed();
+
             mediaPlayer.reset();
             mediaPlayer.setDataSource(radio.getRadioStreamUrl());
-            mediaPlayer.prepare();
+            mediaPlayer.prepareAsync();
             tbRadioName.setText(radio.getName());
-            startPlay();
+
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "cant load stream", Toast.LENGTH_SHORT).show();
@@ -149,7 +240,9 @@ public class MainActivity extends AppCompatActivity {
                     getWindowManager().getDefaultDisplay().getSize(size);
                     int widthDiv2 = size.x / 2;
 
-                    ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+                    context.radioList = radioList;
+
+                    viewPager = (ViewPager) findViewById(R.id.view_pager);
                     if (viewPager != null) {
                         viewPager.setAdapter(new ViewRadioAdapter(context, radioList, widthDiv2));
                     }

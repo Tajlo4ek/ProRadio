@@ -11,6 +11,7 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabMode="scrollable"
 
         android:layout_weight="1"
         app:tabGravity="center"
@@ -30,12 +31,23 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnStartStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/btnLike"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="Stop" />
+            android:background="@color/purple_500"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/not_liked" />
+
+        <ImageButton
+            android:id="@+id/btnStartStop"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@color/purple_500"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/play" />
 
         <Space
             android:layout_width="15dp"
@@ -44,10 +56,11 @@
 
         <TextView
             android:id="@+id/tbRadioName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="TextView" />
+            android:gravity="center_vertical" />
+
     </LinearLayout>
 
 

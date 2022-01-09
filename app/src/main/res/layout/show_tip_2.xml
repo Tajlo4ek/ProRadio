@@ -30,6 +30,7 @@
             android:layout_weight="0"
             android:autoText="true"
             android:text="Слушай радио везде"
+            android:textAlignment="center"
             app:autoSizeTextType="uniform"
             android:textColor="@color/purple_200"/>
 

@@ -1,4 +1,5 @@
 package com.tajlok.proradio;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +43,7 @@ public class Radio {
             list.add(Radio.fromJson(json.getJSONObject(i)));
         }
 
-        return list;
+        return getActive(list);
     }
 
     public static List<Radio> getActive(List<Radio> list) {

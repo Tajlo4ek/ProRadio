@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,6 +35,9 @@ import java.util.List;
 public class ChoiceLoveActivity extends AppCompatActivity {
 
     List<Radio> radioList;
+
+    ImageView loadImage;
+    AnimationDrawable loadAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,11 @@ public class ChoiceLoveActivity extends AppCompatActivity {
             }
         });
 
+        loadImage = (ImageView) findViewById(R.id.loadGif);
+        loadImage.setBackgroundResource(R.drawable.load_anim);
+        loadAnim = (AnimationDrawable) loadImage.getBackground();
+        loadAnim.start();
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -74,6 +83,7 @@ public class ChoiceLoveActivity extends AppCompatActivity {
             }
         });
         thread.start();
+
     }
 
     private void loadData() {
@@ -86,6 +96,9 @@ public class ChoiceLoveActivity extends AppCompatActivity {
             this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    loadAnim.stop();
+                    loadImage.setVisibility(View.GONE);
+
                     context.radioList = radioList;
                     TableLayout table = (TableLayout) findViewById(R.id.radioTable);
                     for (int rowInd = 0; rowInd < rowCount; rowInd++) {

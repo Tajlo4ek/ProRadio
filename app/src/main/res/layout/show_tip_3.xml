@@ -29,6 +29,7 @@
             android:layout_gravity="center"
             android:layout_weight="0"
             android:text="Слушай любимые станции"
+            android:textAlignment="center"
             android:textSize="32sp"
             app:autoSizeTextType="none"
             android:textColor="@color/purple_200"/>
