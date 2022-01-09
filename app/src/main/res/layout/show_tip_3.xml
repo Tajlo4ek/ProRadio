@@ -30,8 +30,7 @@
             android:layout_weight="0"
             android:text="Слушай любимые станции"
             android:textAlignment="center"
-            android:textSize="32sp"
-            app:autoSizeTextType="none"
+            android:textSize="25sp"
             android:textColor="@color/purple_200"/>
 
         <Button
