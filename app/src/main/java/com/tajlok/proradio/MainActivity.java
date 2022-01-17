@@ -1,6 +1,7 @@
 package com.tajlok.proradio;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -112,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        UpdateData();
+
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -123,17 +126,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loadData();
-            }
-        });
-        thread.start();
 
         isNeedShowPanel = false;
         nowPLay = null;
         showIsPlayed();
+    }
+
+    public void UpdateData() {
+        UpdateData(null, 0);
+    }
+
+    public void UpdateData(SwipeRefreshLayout refreshLayout, int pos) {
+        MainActivity context = this;
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadData();
+
+
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (refreshLayout != null) {
+                            refreshLayout.setRefreshing(false);
+                        }
+
+                        viewPager.setCurrentItem(pos);
+                    }
+                });
+
+            }
+        });
+        thread.start();
     }
 
     @Override
@@ -249,6 +273,12 @@ public class MainActivity extends AppCompatActivity {
 
                     TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
                     tabLayout.setupWithViewPager(viewPager, true);
+
+                    ViewRadioAdapter adapter = (ViewRadioAdapter) viewPager.getAdapter();
+                    if (adapter != null) {
+                        adapter.SetChanged();
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             });
 

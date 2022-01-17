@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.PagerAdapter;
 
 public class ViewRadioAdapter extends PagerAdapter {
@@ -66,6 +67,14 @@ public class ViewRadioAdapter extends PagerAdapter {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         ViewGroup layout = (ViewGroup) inflater.inflate(
                 R.layout.radio_tab, viewGroup, false);
+
+        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mContext.UpdateData(refreshLayout, position);
+            }
+        });
 
         List<Radio> radioList = new ArrayList<>();
         ViewType myType = ViewType.values()[position];
