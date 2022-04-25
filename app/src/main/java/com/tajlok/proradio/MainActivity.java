@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton btnLike2;
 
     boolean isShowMoreInfo = false;
+    int nowShowId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intentMain);
             finish();
         }
+
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        radioList = ImageBuffer.GetRadioList();
 
 
         tbRadioName = (TextView) findViewById(R.id.tbRadioName);
@@ -106,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "https:\\proRadio.ru?radioId=" + nowPLay.getId());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showradio/" + nowPLay.getId());
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent, "Поделиться"));
             }
@@ -174,6 +180,76 @@ public class MainActivity extends AppCompatActivity {
         isNeedShowPanel = false;
         nowPLay = null;
         showIsPlayed();
+
+        String showId = (String) getIntent().getSerializableExtra("showId");
+        if (showId != null) {
+            try {
+                ShowMoreInfo(Integer.parseInt(showId));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void ShowMoreInfo(int radioId) {
+        isShowMoreInfo = true;
+
+        viewPager.setVisibility(View.GONE);
+        findViewById(R.id.tab_layout).setVisibility(View.GONE);
+        findViewById(R.id.groupPlay).setVisibility(View.GONE);
+
+        ImageView radioImage = findViewById(R.id.imageView2);
+        TextView radioName = findViewById(R.id.tbRadioName2);
+
+        radioImage.setVisibility(View.VISIBLE);
+        radioName.setVisibility(View.VISIBLE);
+        findViewById(R.id.groupPlay2).setVisibility(View.VISIBLE);
+
+        for (Radio radio : radioList) {
+            if (radio.getId() == radioId) {
+
+                Context context = this;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Drawable img = ImageBuffer.GetImage(radio.getCoverUrl());
+
+                        new Handler(context.getMainLooper())
+                                .post(
+                                        () -> radioImage.setImageDrawable(img == null ? getDrawable(R.drawable.error) : img));
+
+                    }
+                }).start();
+                radioName.setText(radio.getName());
+                nowShowId = radioId;
+                break;
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isShowMoreInfo) {
+            isShowMoreInfo = false;
+
+            viewPager.setVisibility(View.VISIBLE);
+            findViewById(R.id.tab_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.groupPlay).setVisibility(View.VISIBLE);
+
+            ImageView radioImage = findViewById(R.id.imageView2);
+            TextView radioName = findViewById(R.id.tbRadioName2);
+
+            radioImage.setVisibility(View.GONE);
+            radioName.setVisibility(View.GONE);
+            findViewById(R.id.groupPlay2).setVisibility(View.GONE);
+            showIsPlayed();
+        } else {
+            super.onBackPressed();
+        }
+
     }
 
     public void UpdateData() {
@@ -232,8 +308,13 @@ public class MainActivity extends AppCompatActivity {
         startStopBtn2.setImageResource(R.drawable.pause);
         showIsPlayed();
 
-        loadAnim.stop();
-        loadAnim2.stop();
+        if (loadAnim != null) {
+            loadAnim.stop();
+        }
+
+        if (loadAnim2 != null) {
+            loadAnim2.stop();
+        }
     }
 
     private void showIsPlayed() {
@@ -293,7 +374,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        List<Radio> radioList = ImageBuffer.GetRadioList();
 
         SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
@@ -322,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
 
                 context.radioList = radioList;
 
-                viewPager = (ViewPager) findViewById(R.id.view_pager);
                 if (viewPager != null) {
                     viewPager.setAdapter(new ViewRadioAdapter(context, radioList, widthDiv2));
                 }

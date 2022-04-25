@@ -1,48 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tajlok.proradio" >
+    package="com.tajlok.proradio">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
 
-        android:testOnly="false"
+        android:allowBackup="true"
         android:debuggable="false"
 
-        android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ProRadio" >
+        android:testOnly="false"
+        android:theme="@style/Theme.ProRadio">
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".MainActivity"
-            android:noHistory="true"
-            android:exported="true" >
+
+            android:name=".LinkActivity"
+            android:exported="true"
+            android:noHistory="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="proradio.ru"
+                    android:pathPrefix="/showradio"
+                    android:scheme="https" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:noHistory="true" />
 
         <activity
             android:name=".ChoiceLoveActivity"
-            android:noHistory="true"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:noHistory="true" />
 
         <activity
             android:name=".FirstStartActivity"
-            android:noHistory="true"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:noHistory="true" />
 
     </application>
 

@@ -58,7 +58,7 @@ public class ImageBuffer {
 
             return new BitmapDrawable(Resources.getSystem(), bmp);
         } catch (Exception e) {
-            return ResourcesCompat.getDrawable(Resources.getSystem(), R.drawable.error, null);
+            return null;
         }
     }
 }

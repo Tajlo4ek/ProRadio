@@ -1,11 +1,13 @@
 package com.tajlok.proradio;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -15,22 +17,29 @@ public class SplashActivity extends AppCompatActivity {
 
         Context context = this;
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        new Thread(() -> {
+            try {
+                ImageBuffer.LoadRadio();
+
+                String data = (String) getIntent().getSerializableExtra("data");
+                if (data != null) {
                     Thread.sleep(1000);
-
-                    ImageBuffer.LoadRadio();
-
-                    Intent intentMain = new Intent(context, MainActivity.class);
-                    startActivity(intentMain);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
-                finish();
+
+                Intent intentMain = new Intent(context, MainActivity.class);
+
+
+                if (data != null) {
+                    String idStr = data.substring(data.lastIndexOf("/") + 1);
+                    intentMain.putExtra("showId", idStr);
+                }
+
+                startActivity(intentMain);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            finish();
         }).start();
     }
 }
