@@ -7,6 +7,61 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:visibility="gone"
+        app:srcCompat="@drawable/error" />
+
+    <TextView
+        android:id="@+id/tbRadioName2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/groupPlay2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/btnLike2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/btnStartStop2"
+            android:background="@color/purple_500"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/not_liked" />
+
+        <ImageButton
+            android:id="@+id/btnStartStop2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/purple_500"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/play" />
+
+        <ImageButton
+            android:id="@+id/btnShare"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/btnStartStop2"
+            android:background="@color/purple_500"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/img_share" />
+
+    </RelativeLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
@@ -31,7 +86,8 @@
         android:id="@+id/groupPlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="visible">
 
         <ImageButton
             android:id="@+id/btnLike"
