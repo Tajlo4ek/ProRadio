@@ -1,49 +1,30 @@
 package com.tajlok.proradio;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         tbRadioName = (TextView) findViewById(R.id.tbRadioName);
+        tbRadioName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("asd");
+            }
+        });
+
         groupPlay = (LinearLayout) findViewById(R.id.groupPlay);
         groupPlay.setVisibility(View.INVISIBLE);
 
@@ -112,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         UpdateData();
 
@@ -226,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(radio.getRadioStreamUrl());
             mediaPlayer.prepareAsync();
-            tbRadioName.setText(radio.getName());
+            tbRadioName.setText(String.format("  %s", radio.getName()));
 
         } catch (IOException e) {
             e.printStackTrace();

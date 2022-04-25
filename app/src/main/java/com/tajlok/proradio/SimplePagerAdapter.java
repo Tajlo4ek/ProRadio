@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -15,7 +16,7 @@ public class SimplePagerAdapter extends PagerAdapter {
     private final Context mContext;
     private final ViewPager mPager;
 
-    private final int layouts[] = {
+    private final int[] layouts = {
             R.layout.show_tip_1,
             R.layout.show_tip_2,
             R.layout.show_tip_3,
@@ -26,23 +27,21 @@ public class SimplePagerAdapter extends PagerAdapter {
         mPager = pager;
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup viewGroup, int position) {
+    public Object instantiateItem(@NonNull ViewGroup viewGroup, int position) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         ViewGroup layout = (ViewGroup) inflater.inflate(
                 layouts[position], viewGroup, false);
 
-        Button btnNext = (Button) layout.findViewById(R.id.btn_next);
+        Button btnNext = layout.findViewById(R.id.btn_next);
         if (btnNext != null) {
-            btnNext.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (position < layouts.length - 1) {
-                        setItem(position + 1);
-                    } else {
-                        Intent intentMain = new Intent(mContext, ChoiceLoveActivity.class);
-                        mContext.startActivity(intentMain);
-                    }
+            btnNext.setOnClickListener(v -> {
+                if (position < layouts.length - 1) {
+                    setItem(position + 1);
+                } else {
+                    Intent intentMain = new Intent(mContext, ChoiceLoveActivity.class);
+                    mContext.startActivity(intentMain);
                 }
             });
         }
@@ -53,7 +52,7 @@ public class SimplePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup viewGroup, int position, Object view) {
+    public void destroyItem(ViewGroup viewGroup, int position, @NonNull Object view) {
         viewGroup.removeView((View) view);
     }
 
@@ -63,7 +62,7 @@ public class SimplePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
     }
 

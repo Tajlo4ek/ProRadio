@@ -58,6 +58,7 @@ public class Radio {
     }
 
     public static List<Radio> loadFromUrl(String url) throws IOException, JSONException {
+
         InputStream is = (InputStream) new URL(url).getContent();
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];

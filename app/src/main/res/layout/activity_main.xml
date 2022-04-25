@@ -11,48 +11,50 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="scrollable"
-
         android:layout_weight="1"
+
+        android:visibility="visible"
         app:tabGravity="center"
-        app:tabIndicatorHeight="0dp" />
+        app:tabIndicatorHeight="0dp"
+        app:tabMode="scrollable" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5">
+        android:layout_weight="5"
+        android:visibility="visible">
 
     </androidx.viewpager.widget.ViewPager>
 
     <LinearLayout
         android:id="@+id/groupPlay"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/btnLike"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
             android:background="@color/purple_500"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/not_liked" />
 
         <ImageButton
             android:id="@+id/btnStartStop"
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_weight="1"
+            android:layout_weight="10"
             android:background="@color/purple_500"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/play" />
 
         <Space
-            android:layout_width="15dp"
+            android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="2" />
 
         <TextView
             android:id="@+id/tbRadioName"

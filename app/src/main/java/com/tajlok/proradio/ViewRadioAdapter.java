@@ -207,13 +207,13 @@ public class ViewRadioAdapter extends PagerAdapter {
             @Override
             public void run() {
                 try {
-                    Drawable asd = LoadImageFromWebOperations(radio.getCoverUrl());
+                    Drawable drawable = ImageBuffer.GetImage(radio.getCoverUrl());
 
                     Handler mainHandler = new Handler(context.getMainLooper());
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            image.setImageDrawable(asd);
+                            image.setImageDrawable(drawable);
                         }
                     };
 
@@ -230,26 +230,6 @@ public class ViewRadioAdapter extends PagerAdapter {
         root.addView(textLine);
 
         return root;
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    public Drawable LoadImageFromWebOperations(String url) {
-
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.connect();
-            InputStream input = connection.getInputStream();
-
-            Bitmap bmp = BitmapFactory.decodeStream(input);
-
-            if (bmp == null) {
-                throw new Exception("img not load");
-            }
-
-            return new BitmapDrawable(Resources.getSystem(), bmp);
-        } catch (Exception e) {
-            return mContext.getResources().getDrawable(R.drawable.error);
-        }
     }
 
 
