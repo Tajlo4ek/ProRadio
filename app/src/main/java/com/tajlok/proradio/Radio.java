@@ -57,16 +57,19 @@ public class Radio {
         return newList;
     }
 
-    public static List<Radio> loadFromUrl(String url) throws IOException, JSONException {
+    public static List<Radio> loadFromUrl(String url) {
 
-        InputStream is = (InputStream) new URL(url).getContent();
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        for (int length; (length = is.read(buffer)) != -1; ) {
-            result.write(buffer, 0, length);
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            for (int length; (length = is.read(buffer)) != -1; ) {
+                result.write(buffer, 0, length);
+            }
+            return radioListFromJson(new JSONArray(result.toString("UTF-8")));
+        } catch (Exception ignored) {
+            return new ArrayList<Radio>();
         }
-
-        return radioListFromJson(new JSONArray(result.toString("UTF-8")));
     }
 
 

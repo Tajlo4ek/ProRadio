@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         stopPlay();
+        mediaPlayer.release();
     }
 
     private void stopPlay() {
@@ -292,55 +293,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        try {
-            List<Radio> radioList = Radio.loadFromUrl("https://newradiobacklast.herokuapp.com/radio_channel");
+        List<Radio> radioList = ImageBuffer.GetRadioList();
 
-            SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
-            @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
+        SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
+        @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
 
-            int radioNum = 0;
-            while (preferences.contains("radio" + radioNum)) {
-                int id = preferences.getInt("radio" + radioNum, -1);
+        int radioNum = 0;
+        while (preferences.contains("radio" + radioNum)) {
+            int id = preferences.getInt("radio" + radioNum, -1);
 
-                for (int i = 0; i < radioList.size(); i++) {
-                    if (radioList.get(i).getId() == id) {
-                        radioList.get(i).setUserLike(true);
-                        break;
-                    }
+            for (int i = 0; i < radioList.size(); i++) {
+                if (radioList.get(i).getId() == id) {
+                    radioList.get(i).setUserLike(true);
+                    break;
                 }
-                radioNum++;
             }
-
-            MainActivity context = this;
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Point size = new Point();
-                    getWindowManager().getDefaultDisplay().getSize(size);
-                    int widthDiv2 = size.x / 2;
-
-                    context.radioList = radioList;
-
-                    viewPager = (ViewPager) findViewById(R.id.view_pager);
-                    if (viewPager != null) {
-                        viewPager.setAdapter(new ViewRadioAdapter(context, radioList, widthDiv2));
-                    }
-
-                    TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-                    tabLayout.setupWithViewPager(viewPager, true);
-
-                    ViewRadioAdapter adapter = (ViewRadioAdapter) viewPager.getAdapter();
-                    if (adapter != null) {
-                        adapter.SetChanged();
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            });
-
-
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            radioNum++;
         }
+
+        MainActivity context = this;
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
+                int widthDiv2 = size.x / 2;
+
+                context.radioList = radioList;
+
+                viewPager = (ViewPager) findViewById(R.id.view_pager);
+                if (viewPager != null) {
+                    viewPager.setAdapter(new ViewRadioAdapter(context, radioList, widthDiv2));
+                }
+
+                TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+                tabLayout.setupWithViewPager(viewPager, true);
+
+                ViewRadioAdapter adapter = (ViewRadioAdapter) viewPager.getAdapter();
+                if (adapter != null) {
+                    adapter.SetChanged();
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+
     }
 }
