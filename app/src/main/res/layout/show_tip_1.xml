@@ -20,7 +20,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/img_tip1" />
+            app:srcCompat="?attr/img_tip_1" />
 
         <TextView
             android:id="@+id/textView3"
@@ -31,7 +31,7 @@
             android:textAlignment="center"
             android:textSize="25sp"
             android:text="Стриминговое приложения для прослушивания радио"
-            android:textColor="@color/purple_200"/>
+            android:textColor="?attr/tip_text_color"/>
 
         <Button
             android:id="@+id/btn_next"

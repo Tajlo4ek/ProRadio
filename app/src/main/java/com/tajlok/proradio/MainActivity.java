@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     ImageButton startStopBtn;
     ImageButton startStopBtn2;
 
+    Drawable btnBackground;
+
     LinearLayout groupPlay;
     ViewPager viewPager;
 
@@ -65,11 +67,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(StaticProperty.ThemeId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         SharedPreferences preferences = getSharedPreferences("userData", Context.MODE_PRIVATE);
-        if (!preferences.contains("userId")) {
+        if (!preferences.contains("end_ok")) {
             Intent intent = new Intent(this, FirstStartActivity.class);
             startActivity(intent);
             finish();
@@ -134,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
         startStopBtn.setOnClickListener(startStopListener);
         startStopBtn2.setOnClickListener(startStopListener);
 
+        btnBackground = startStopBtn.getBackground();
+
         View.OnClickListener likeListener = v -> {
             if (nowPLay == null) {
                 return;
@@ -175,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
         btnLike.setOnClickListener(likeListener);
         btnLike2.setOnClickListener(likeListener);
 
-
         String id = (String) getIntent().getSerializableExtra("showPlayListId");
         if (id != null) {
             try {
@@ -183,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (NumberFormatException ignored) {
             }
         }
+
 
         UpdateData();
 
@@ -270,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void UpdateData() {
-        UpdateData(null, 0);
+        UpdateData(null, -1);
     }
 
     public void UpdateData(SwipeRefreshLayout refreshLayout, int pos) {
@@ -283,7 +288,9 @@ public class MainActivity extends AppCompatActivity {
                     refreshLayout.setRefreshing(false);
                 }
 
-                viewPager.setCurrentItem(pos);
+                if (pos != -1) {
+                    viewPager.setCurrentItem(pos);
+                }
             });
 
         });
@@ -309,13 +316,18 @@ public class MainActivity extends AppCompatActivity {
         isNeedShowPanel = true;
         startStopBtn.setImageResource(R.drawable.play);
         startStopBtn2.setImageResource(R.drawable.play);
+
         showIsPlayed();
     }
 
     private void startPlay() {
         mediaPlayer.start();
         startStopBtn.setImageResource(R.drawable.pause);
+        startStopBtn.setBackground(btnBackground);
+
         startStopBtn2.setImageResource(R.drawable.pause);
+        startStopBtn2.setBackground(btnBackground);
+
         showIsPlayed();
 
         if (loadAnim != null) {
@@ -415,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
     private void ShareRadio(int radioId) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showradio/" + radioId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showradio/" + radioId);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, "Поделиться"));
     }
@@ -423,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
     private void SharePlayList(int playlistId) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showplaylist/" + playlistId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showplaylist/" + playlistId);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, "Поделиться"));
     }
@@ -479,7 +491,13 @@ public class MainActivity extends AppCompatActivity {
             if (adapter != null) {
                 adapter.SetChanged();
                 adapter.notifyDataSetChanged();
+
+                if (sharedPlaylist != -1) {
+                    viewPager.setCurrentItem(adapter.getCount() - 1);
+                }
             }
+
+
         });
 
 

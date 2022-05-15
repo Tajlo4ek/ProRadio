@@ -18,6 +18,7 @@ public class FirstStartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(StaticProperty.ThemeId);
         super.onCreate(savedInstanceState);
 
         new Thread(() -> {
@@ -41,8 +42,7 @@ public class FirstStartActivity extends AppCompatActivity {
                 editor.putInt("lovePlayListId", request.getInt("id"));
                 editor.apply();
 
-                System.out.println(userId.toString());
-                System.out.println(request.getInt("id"));
+                Api.SendPost("https://newradiobacklast.herokuapp.com/abtest/add/" + userId.toString() + "/" + StaticProperty.ThemeAB + "/1");
 
             } catch (JSONException e) {
                 e.printStackTrace();

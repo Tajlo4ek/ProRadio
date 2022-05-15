@@ -41,6 +41,7 @@ public class ChoiceLoveActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(StaticProperty.ThemeId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chouce_love_activity);
 
@@ -54,8 +55,12 @@ public class ChoiceLoveActivity extends AppCompatActivity {
                 String userId = preferences.getString("userId", "null");
                 int playListId = preferences.getInt("lovePlayListId", -1);
 
-                preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
                 @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("end_ok", true);
+                editor.apply();
+
+                preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
+                editor = preferences.edit();
                 int radioNum = 0;
                 for (int i = 0; i < radioList.size(); i++) {
                     if (radioList.get(i).getUserLike()) {
@@ -84,6 +89,10 @@ public class ChoiceLoveActivity extends AppCompatActivity {
                     }
                 }
                 editor.apply();
+
+                new Thread(() -> {
+                    Api.SendPost("https://newradiobacklast.herokuapp.com/abtest/add/" + userId + "/" + StaticProperty.ThemeAB + "/0");
+                }).start();
 
                 Intent intentMain = new Intent(context, MainActivity.class);
                 startActivity(intentMain);

@@ -40,10 +40,10 @@ public class ViewRadioAdapter extends PagerAdapter {
     private boolean containsShared;
 
     enum ViewType {
-        SHARED("Shared"),
         LIKED("Понравившиеся"),
         ALL("Все"),
-        POPULAR("Популярное");
+        POPULAR("Популярное"),
+        SHARED("Shared");
 
         public final String title;
 
@@ -84,24 +84,14 @@ public class ViewRadioAdapter extends PagerAdapter {
             @Override
             public void onRefresh() {
 
-                if (containsShared) {
-                    mContext.UpdateData(refreshLayout, position);
-                } else {
-                    mContext.UpdateData(refreshLayout, position + 1);
-                }
-
+                mContext.UpdateData(refreshLayout, position);
 
             }
         });
 
         List<Radio> radioList = new ArrayList<>();
-        ViewType myType;
 
-        if (containsShared) {
-            myType = ViewType.values()[position];
-        } else {
-            myType = ViewType.values()[position + 1];
-        }
+        ViewType myType = ViewType.values()[position];
 
 
         layout.setTag(myType);
@@ -138,6 +128,7 @@ public class ViewRadioAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup viewGroup, int position, Object view) {
         //viewGroup.removeView((View) view);
+        System.out.println("destroy" + position);
     }
 
     public int getItemPosition(Object object) {
@@ -162,12 +153,7 @@ public class ViewRadioAdapter extends PagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-
-        if (containsShared) {
-            return ViewType.values()[position].title;
-        } else {
-            return ViewType.values()[position + 1].title;
-        }
+        return ViewType.values()[position].title;
     }
 
     @Override

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="customAttrs">
+        <attr name="img_tip_1" format="reference" />
+        <attr name="img_tip_2" format="reference" />
+        <attr name="img_tip_3" format="reference" />
+        <attr name="img_splash" format="reference" />
+        <attr name="tip_text_color" format="color" />
+    </declare-styleable>
+</resources>
