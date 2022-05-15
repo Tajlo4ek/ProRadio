@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,10 +25,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
     boolean isShowMoreInfo = false;
     Radio nowShowRadio = null;
 
+    String userId;
+    int lovePlaylistId;
+
+    int sharedPlaylist = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,8 +75,11 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        String userId = preferences.getString("userId", "null");
-        int lovePlayListId = preferences.getInt("lovePlayListId", -1);
+        userId = preferences.getString("userId", "null");
+        lovePlaylistId = preferences.getInt("lovePlayListId", -1);
+
+        System.out.println(userId);
+        System.out.println(lovePlaylistId);
 
         viewPager = findViewById(R.id.view_pager);
         radioList = ImageBuffer.GetRadioList();
@@ -107,11 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showradio/" + nowShowRadio.getId());
-            sendIntent.setType("text/plain");
-            startActivity(Intent.createChooser(sendIntent, "Поделиться"));
+            ShareRadio(nowShowRadio.getId());
         });
 
         View.OnClickListener startStopListener = v -> {
@@ -127,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         startStopBtn.setOnClickListener(startStopListener);
         startStopBtn2.setOnClickListener(startStopListener);
 
-
         View.OnClickListener likeListener = v -> {
             if (nowPLay == null) {
                 return;
@@ -141,9 +147,13 @@ public class MainActivity extends AppCompatActivity {
             new Thread(() -> {
                 try {
                     JSONObject json = new JSONObject();
-                    json.put("playlist_id", lovePlayListId);
+                    json.put("playlist_id", lovePlaylistId);
                     json.put("channel_id", nowPLay.getId());
-                    JSONObject request = Api.SendPost("https://newradiobacklast.herokuapp.com/playlist/add_channel", json);
+                    JSONObject request = Api.SendPost(
+                            nowPLay.getUserLike() ?
+                                    "https://newradiobacklast.herokuapp.com/playlist/add_channel" :
+                                    "https://newradiobacklast.herokuapp.com/playlist/del_channel",
+                            json);
                     System.out.println(request);
 
                 } catch (JSONException e) {
@@ -166,6 +176,14 @@ public class MainActivity extends AppCompatActivity {
         btnLike2.setOnClickListener(likeListener);
 
 
+        String id = (String) getIntent().getSerializableExtra("showPlayListId");
+        if (id != null) {
+            try {
+                sharedPlaylist = Integer.parseInt(id);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
         UpdateData();
 
 
@@ -179,10 +197,10 @@ public class MainActivity extends AppCompatActivity {
         nowPLay = null;
         showIsPlayed();
 
-        String showId = (String) getIntent().getSerializableExtra("showId");
-        if (showId != null) {
+        id = (String) getIntent().getSerializableExtra("showRadioId");
+        if (id != null) {
             try {
-                ShowMoreInfo(Integer.parseInt(showId));
+                ShowMoreInfo(Integer.parseInt(id));
             } catch (NumberFormatException ignored) {
             }
         }
@@ -365,6 +383,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void RegisterForMenu(View view) {
+        view.setOnLongClickListener(v -> {
+            showPopupMenu(v);
+            return true;
+        });
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private void showPopupMenu(View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.inflate(R.menu.share_menu);
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+
+            switch (item.getItemId()) {
+                case R.id.item_share_radio:
+                    ShareRadio(Integer.parseInt(v.getTag().toString()));
+                    return true;
+                case R.id.item_share_playlist:
+                    SharePlayList(lovePlaylistId);
+                    return true;
+                default:
+                    return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void ShareRadio(int radioId) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showradio/" + radioId);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, "Поделиться"));
+    }
+
+    private void SharePlayList(int playlistId) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.ru/showplaylist/" + playlistId);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, "Поделиться"));
+    }
+
     private void loadData() {
 
         SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
@@ -382,14 +445,28 @@ public class MainActivity extends AppCompatActivity {
             radioNum++;
         }
 
+        if (sharedPlaylist != -1) {
+            JSONObject list = Api.SendGet("https://newradiobacklast.herokuapp.com/playlist/" + sharedPlaylist);
+
+            Iterator<String> iter = list.keys();
+            while (iter.hasNext()) {
+                String key = iter.next();
+
+                for (int i = 0; i < radioList.size(); i++) {
+                    if (key.equals(radioList.get(i).getId() + "")) {
+                        radioList.get(i).setShared(true);
+                        break;
+                    }
+                }
+            }
+        }
+
         MainActivity context = this;
         this.runOnUiThread(() -> {
 
             Point size = new Point();
             getWindowManager().getDefaultDisplay().getSize(size);
             int widthDiv2 = size.x / 2;
-
-            context.radioList = radioList;
 
             if (viewPager != null) {
                 viewPager.setAdapter(new ViewRadioAdapter(context, radioList, widthDiv2));

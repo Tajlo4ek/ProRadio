@@ -37,7 +37,10 @@ public class ViewRadioAdapter extends PagerAdapter {
 
     private boolean isChanged;
 
+    private boolean containsShared;
+
     enum ViewType {
+        SHARED("Shared"),
         LIKED("Понравившиеся"),
         ALL("Все"),
         POPULAR("Популярное");
@@ -53,6 +56,14 @@ public class ViewRadioAdapter extends PagerAdapter {
         mContext = activity;
         this.radioList = radioList;
         this.itemSize = itemSize;
+
+        this.containsShared = false;
+        for (int i = 0; i < radioList.size(); i++) {
+            if (radioList.get(i).getShared()) {
+                this.containsShared = true;
+                break;
+            }
+        }
 
         isChanged = true;
     }
@@ -72,12 +83,26 @@ public class ViewRadioAdapter extends PagerAdapter {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mContext.UpdateData(refreshLayout, position);
+
+                if (containsShared) {
+                    mContext.UpdateData(refreshLayout, position);
+                } else {
+                    mContext.UpdateData(refreshLayout, position + 1);
+                }
+
+
             }
         });
 
         List<Radio> radioList = new ArrayList<>();
-        ViewType myType = ViewType.values()[position];
+        ViewType myType;
+
+        if (containsShared) {
+            myType = ViewType.values()[position];
+        } else {
+            myType = ViewType.values()[position + 1];
+        }
+
 
         layout.setTag(myType);
 
@@ -95,11 +120,15 @@ public class ViewRadioAdapter extends PagerAdapter {
                 case POPULAR:
                     if (item.getPopular()) radioList.add(item);
                     break;
+
+                case SHARED:
+                    if (item.getShared()) radioList.add(item);
+                    break;
             }
         }
 
 
-        parseData(layout.findViewById(R.id.radio_table), radioList, itemSize);
+        parseData(layout.findViewById(R.id.radio_table), radioList, itemSize, myType);
         viewGroup.addView(layout);
 
 
@@ -123,12 +152,22 @@ public class ViewRadioAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return ViewType.values().length;
+
+        if (containsShared) {
+            return ViewType.values().length;
+        } else {
+            return ViewType.values().length - 1;
+        }
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return ViewType.values()[position].title;
+
+        if (containsShared) {
+            return ViewType.values()[position].title;
+        } else {
+            return ViewType.values()[position + 1].title;
+        }
     }
 
     @Override
@@ -137,7 +176,7 @@ public class ViewRadioAdapter extends PagerAdapter {
     }
 
 
-    private void parseData(TableLayout table, List<Radio> radioList, int size) {
+    private void parseData(TableLayout table, List<Radio> radioList, int size, ViewType myType) {
 
         int rowCount = (radioList.size() + 1) / 2;
 
@@ -148,15 +187,14 @@ public class ViewRadioAdapter extends PagerAdapter {
                     TableLayout.LayoutParams.MATCH_PARENT));
 
             for (int i = rowInd * 2; (i < (rowInd + 1) * 2) && (i < radioList.size()); i++) {
-                tableRow.addView(viewFromRadio(mContext, radioList.get(i), size));
+                tableRow.addView(viewFromRadio(mContext, radioList.get(i), size, myType));
             }
 
             table.addView(tableRow, rowInd);
         }
-
     }
 
-    private View viewFromRadio(Context context, Radio radio, int size) {
+    private View viewFromRadio(Context context, Radio radio, int size, ViewType myType) {
 
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -165,6 +203,9 @@ public class ViewRadioAdapter extends PagerAdapter {
                 TableRow.LayoutParams.WRAP_CONTENT,
                 0.5f);
         root.setLayoutParams(lineParams);
+        root.setTag(radio.getId());
+
+        System.out.println("tag " + root.getTag());
 
         LinearLayout textLine = new LinearLayout(context);
         textLine.setLayoutParams(new LinearLayout.LayoutParams(
@@ -192,6 +233,9 @@ public class ViewRadioAdapter extends PagerAdapter {
                 mContext.RunRadio(radio);
             }
         });
+
+        mContext.RegisterForMenu(root);
+
 
         textLine.addView(text);
 

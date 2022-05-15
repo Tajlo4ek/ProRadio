@@ -43,6 +43,11 @@
                     android:pathPrefix="/showradio"
                     android:scheme="https" />
 
+                <data
+                    android:host="proradio.ru"
+                    android:pathPrefix="/showplaylist"
+                    android:scheme="https" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 

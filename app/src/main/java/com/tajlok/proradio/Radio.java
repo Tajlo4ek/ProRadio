@@ -17,6 +17,7 @@ public class Radio {
     private Boolean isActive;
     private String coverUrl;
     private Boolean isPopular;
+    private Boolean isShared;
     private String radioStreamUrl;
     private int id;
 
@@ -32,6 +33,7 @@ public class Radio {
         radio.radioStreamUrl = json.getString("radio_stream_url");
         radio.id = json.getInt("id");
         radio.isUserLike = false;
+        radio.isShared = false;
 
         return radio;
     }
@@ -66,6 +68,8 @@ public class Radio {
             for (int length; (length = is.read(buffer)) != -1; ) {
                 result.write(buffer, 0, length);
             }
+
+            String data = result.toString("UTF-8");
             return radioListFromJson(new JSONArray(result.toString("UTF-8")));
         } catch (Exception ignored) {
             return new ArrayList<Radio>();
@@ -103,5 +107,13 @@ public class Radio {
 
     public int getId() {
         return id;
+    }
+
+    public Boolean getShared() {
+        return isShared;
+    }
+
+    public void setShared(Boolean shared) {
+        isShared = shared;
     }
 }

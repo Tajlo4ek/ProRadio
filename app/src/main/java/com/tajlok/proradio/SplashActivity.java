@@ -31,7 +31,12 @@ public class SplashActivity extends AppCompatActivity {
 
                 if (data != null) {
                     String idStr = data.substring(data.lastIndexOf("/") + 1);
-                    intentMain.putExtra("showId", idStr);
+
+                    if (data.contains("showradio")) {
+                        intentMain.putExtra("showRadioId", idStr);
+                    } else if (data.contains("showplaylist")) {
+                        intentMain.putExtra("showPlayListId", idStr);
+                    }
                 }
 
                 startActivity(intentMain);

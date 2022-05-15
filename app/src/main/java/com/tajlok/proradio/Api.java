@@ -43,11 +43,27 @@ public class Api {
         return new JSONObject();
     }
 
-    public static JSONObject SendPost(String url) {
-        return SendPost(url, new JSONObject());
+    public static JSONObject SendGet(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("User-Agent", UserAgent)
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                throw new IOException("error " + response);
+            }
+
+            return new JSONObject(response.body().string());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return new JSONObject();
     }
 
-    public static void SendGet(String url, JSONObject data) {
-
+    public static JSONObject SendPost(String url) {
+        return SendPost(url, new JSONObject());
     }
 }

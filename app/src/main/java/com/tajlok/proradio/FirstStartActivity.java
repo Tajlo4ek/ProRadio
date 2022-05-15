@@ -1,7 +1,6 @@
 package com.tajlok.proradio;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
@@ -14,9 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.UUID;
-
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
 
 public class FirstStartActivity extends AppCompatActivity {
 
