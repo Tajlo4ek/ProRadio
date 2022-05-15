@@ -25,8 +25,6 @@ public class LinkActivity extends AppCompatActivity {
         }
 
         startActivity(intentMain);
-
-
         finish();
     }
 }

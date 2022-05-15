@@ -26,11 +26,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 public class ChoiceLoveActivity extends AppCompatActivity {
 
@@ -50,20 +53,39 @@ public class ChoiceLoveActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                SharedPreferences preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
+                SharedPreferences preferences = getSharedPreferences("userData", Context.MODE_PRIVATE);
+                String userId = preferences.getString("userId", "null");
+                int playListId = preferences.getInt("lovePlayListId", -1);
+
+                preferences = getSharedPreferences("likeRadio", Context.MODE_PRIVATE);
                 @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
                 int radioNum = 0;
                 for (int i = 0; i < radioList.size(); i++) {
                     if (radioList.get(i).getUserLike()) {
-                        editor.putInt("radio" + radioNum, radioList.get(i).getId());
+
+                        int radioId = radioList.get(i).getId();
+
+                        editor.putInt("radio" + radioNum, radioId);
                         radioNum++;
+
+                        System.out.println(radioId);
+
+                        new Thread(() -> {
+                            try {
+                                System.out.println("try send");
+                                JSONObject json = new JSONObject();
+                                json.put("playlist_id", playListId);
+                                json.put("channel_id", radioId);
+                                JSONObject request = Api.SendPost("https://newradiobacklast.herokuapp.com/playlist/add_channel", json);
+                                System.out.println(request);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }).start();
                     }
                 }
-                editor.apply();
-
-                preferences = getSharedPreferences("notFirstLoad", Context.MODE_PRIVATE);
-                editor = preferences.edit();
-                editor.putBoolean("exist", true);
                 editor.apply();
 
                 Intent intentMain = new Intent(context, MainActivity.class);
@@ -156,6 +178,8 @@ public class ChoiceLoveActivity extends AppCompatActivity {
         );
 
         CheckBox checkBox = new CheckBox(context);
+        checkBox.setClickable(false);
+        checkBox.setFocusable(false);
 
         root.setOnClickListener(new View.OnClickListener() {
             @Override
