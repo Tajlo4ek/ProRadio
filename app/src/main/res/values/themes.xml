@@ -2,19 +2,23 @@
     <!-- Base application theme. -->
     <style name="Theme.ProRadioA" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_500</item>
         <item name="img_tip_1">@drawable/img_tip1</item>
         <item name="img_tip_2">@drawable/img_tip2</item>
         <item name="img_tip_3">@drawable/img_tip3</item>
         <item name="tip_text_color">@color/purple_200</item>
         <item name="img_splash">@drawable/splash</item>
+        <item name="backgroundColor">@color/white</item>
     </style>
 
     <style name="Theme.ProRadioB" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">#0033FF</item>
+        <item name="colorPrimaryDark">#0033FF</item>
         <item name="img_tip_1">@drawable/img_tip1_b</item>
         <item name="img_tip_2">@drawable/img_tip2_b</item>
         <item name="img_tip_3">@drawable/img_tip3_b</item>
         <item name="tip_text_color">#0033FF</item>
         <item name="img_splash">@drawable/splash</item>
+        <item name="backgroundColor">@color/white</item>
     </style>
 </resources>

@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -121,10 +126,14 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            ShareRadio(nowShowRadio.getId());
+            ShareRadio(nowShowRadio);
         });
 
         View.OnClickListener startStopListener = v -> {
+            if (loadAnim.isRunning()) {
+                return;
+            }
+
             if (mediaPlayer.isPlaying()) {
                 pausePlay();
             } else {
@@ -298,8 +307,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         stopPlay();
         mediaPlayer.release();
     }
@@ -411,7 +420,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()) {
                 case R.id.item_share_radio:
-                    ShareRadio(Integer.parseInt(v.getTag().toString()));
+
+                    for (Radio radio : radioList) {
+                        if (v.getTag().equals(radio.getId())) {
+                            ShareRadio(radio);
+                            break;
+                        }
+                    }
                     return true;
                 case R.id.item_share_playlist:
                     SharePlayList(lovePlaylistId);
@@ -424,10 +439,10 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-    private void ShareRadio(int radioId) {
+    private void ShareRadio(Radio radio) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showradio/" + radioId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showradio/" + radio.getId());
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, "Поделиться"));
     }
