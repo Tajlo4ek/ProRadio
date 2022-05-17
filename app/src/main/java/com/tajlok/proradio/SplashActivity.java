@@ -61,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
     private void loadAB() {
         SharedPreferences preferences = getSharedPreferences("abTest", Context.MODE_PRIVATE);
 
-        if (!preferences.contains("theme")) {
+        if (!preferences.contains("themeAB")) {
             try {
 
                 JSONObject json = Api.SendGet("https://newradiobacklast.herokuapp.com/percent/get_random/");
