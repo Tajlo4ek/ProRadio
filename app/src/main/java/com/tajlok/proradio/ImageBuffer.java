@@ -23,7 +23,7 @@ public class ImageBuffer {
     private static List<Radio> radioList;
 
     public static void LoadRadio() {
-        radioList = Radio.loadFromUrl("https://newradiobacklast.herokuapp.com/radio_channel");
+        radioList = Radio.loadFromUrl(StaticProperty.apiWeb + "/radio_channel");
     }
 
     public static Drawable GetImage(String url) {

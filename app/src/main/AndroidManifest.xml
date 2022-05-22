@@ -38,13 +38,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data
-                    android:host="proradio.su"
-                    android:pathPrefix="/showradio"
+                    android:host="proradiofront.herokuapp.com"
+                    android:pathPrefix="/no-app"
                     android:scheme="https" />
 
                 <data
-                    android:host="proradio.su"
-                    android:pathPrefix="/showplaylist"
+                    android:host="proradiofront.herokuapp.com"
+                    android:pathPrefix="/no-app"
                     android:scheme="https" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

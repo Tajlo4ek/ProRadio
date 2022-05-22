@@ -16,8 +16,8 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        SharedPreferences preferences = getSharedPreferences("abTest", Context.MODE_PRIVATE);
-        setTheme(preferences.getInt("theme", R.style.Theme_ProRadioA));
+        loadTheme();
+        setTheme(StaticProperty.ThemeId);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
@@ -40,11 +40,11 @@ public class SplashActivity extends AppCompatActivity {
 
 
                 if (data != null) {
-                    String idStr = data.substring(data.lastIndexOf("/") + 1);
+                    String idStr = data.substring(data.lastIndexOf("=") + 1);
 
-                    if (data.contains("showradio")) {
+                    if (data.contains("radio_id")) {
                         intentMain.putExtra("showRadioId", idStr);
-                    } else if (data.contains("showplaylist")) {
+                    } else if (data.contains("playlist_id")) {
                         intentMain.putExtra("showPlayListId", idStr);
                     }
                 }
@@ -64,7 +64,7 @@ public class SplashActivity extends AppCompatActivity {
         if (!preferences.contains("themeAB")) {
             try {
 
-                JSONObject json = Api.SendGet("https://newradiobacklast.herokuapp.com/percent/get_random/");
+                JSONObject json = Api.SendGet(StaticProperty.apiWeb + "/percent/get_random/");
 
                 System.out.println(json);
 
@@ -82,6 +82,12 @@ public class SplashActivity extends AppCompatActivity {
 
             }
         }
+
+        loadTheme();
+    }
+
+    private void loadTheme() {
+        SharedPreferences preferences = getSharedPreferences("abTest", Context.MODE_PRIVATE);
 
         int themeAb = preferences.getInt("themeAB", 1);
         switch (themeAb) {

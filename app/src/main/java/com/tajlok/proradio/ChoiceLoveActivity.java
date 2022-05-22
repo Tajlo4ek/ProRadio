@@ -78,7 +78,7 @@ public class ChoiceLoveActivity extends AppCompatActivity {
                                 JSONObject json = new JSONObject();
                                 json.put("playlist_id", playListId);
                                 json.put("channel_id", radioId);
-                                JSONObject request = Api.SendPost("https://newradiobacklast.herokuapp.com/playlist/add_channel", json);
+                                JSONObject request = Api.SendPost(StaticProperty.apiWeb + "/playlist/add_channel", json);
                                 System.out.println(request);
 
                             } catch (JSONException e) {
@@ -91,7 +91,7 @@ public class ChoiceLoveActivity extends AppCompatActivity {
                 editor.apply();
 
                 new Thread(() -> {
-                    Api.SendPost("https://newradiobacklast.herokuapp.com/abtest/add/" + userId + "/" + StaticProperty.ThemeAB + "/0");
+                    Api.SendPost(StaticProperty.apiWeb + "/abtest/add/" + userId + "/" + StaticProperty.ThemeAB + "/0");
                 }).start();
 
                 Intent intentMain = new Intent(context, MainActivity.class);
@@ -117,7 +117,7 @@ public class ChoiceLoveActivity extends AppCompatActivity {
     private void loadData() {
 
         try {
-            List<Radio> radioList = Radio.loadFromUrl("https://newradiobacklast.herokuapp.com/radio_channel");
+            List<Radio> radioList = Radio.loadFromUrl(StaticProperty.apiWeb + "/radio_channel");
             int rowCount = (radioList.size() + 1) / 2;
 
             ChoiceLoveActivity context = this;

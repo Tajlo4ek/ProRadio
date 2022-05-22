@@ -164,9 +164,9 @@ public class MainActivity extends AppCompatActivity {
                     json.put("playlist_id", lovePlaylistId);
                     json.put("channel_id", nowPLay.getId());
                     JSONObject request = Api.SendPost(
-                            nowPLay.getUserLike() ?
-                                    "https://newradiobacklast.herokuapp.com/playlist/add_channel" :
-                                    "https://newradiobacklast.herokuapp.com/playlist/del_channel",
+                            StaticProperty.apiWeb + (nowPLay.getUserLike() ?
+                                    "/playlist/add_channel" :
+                                    "/playlist/del_channel"),
                             json);
                     System.out.println(request);
 
@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
     private void ShareRadio(Radio radio) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showradio/" + radio.getId());
+        sendIntent.putExtra(Intent.EXTRA_TEXT, StaticProperty.shareWeb + "?radio_id=" + radio.getId());
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, "Поделиться"));
     }
@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
     private void SharePlayList(int playlistId) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://proradio.su/showplaylist/" + playlistId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, StaticProperty.shareWeb + "?playlist_id=" + playlistId);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, "Поделиться"));
     }
@@ -473,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (sharedPlaylist != -1) {
-            JSONObject list = Api.SendGet("https://newradiobacklast.herokuapp.com/playlist/" + sharedPlaylist);
+            JSONObject list = Api.SendGet(StaticProperty.apiWeb + "/playlist/" + sharedPlaylist);
 
             Iterator<String> iter = list.keys();
             while (iter.hasNext()) {

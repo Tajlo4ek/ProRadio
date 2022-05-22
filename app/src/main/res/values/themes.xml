@@ -18,7 +18,7 @@
         <item name="img_tip_2">@drawable/img_tip2_b</item>
         <item name="img_tip_3">@drawable/img_tip3_b</item>
         <item name="tip_text_color">#0033FF</item>
-        <item name="img_splash">@drawable/splash</item>
+        <item name="img_splash">@drawable/splash_b</item>
         <item name="backgroundColor">@color/white</item>
     </style>
 </resources>

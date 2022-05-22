@@ -27,14 +27,14 @@ public class FirstStartActivity extends AppCompatActivity {
 
                 JSONObject json = new JSONObject();
                 json.put("id", userId.toString());
-                JSONObject request = Api.SendPost("https://newradiobacklast.herokuapp.com/mobile_user/", json);
+                JSONObject request = Api.SendPost(StaticProperty.apiWeb + "/mobile_user/", json);
                 System.out.println(request);
 
                 if (!request.getString("status").equals("ok")) {
                     return;
                 }
 
-                request = Api.SendPost("https://newradiobacklast.herokuapp.com/playlist/add/" + userId.toString());
+                request = Api.SendPost(StaticProperty.apiWeb + "/playlist/add/" + userId.toString());
 
                 SharedPreferences preferences = getSharedPreferences("userData", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
@@ -42,7 +42,7 @@ public class FirstStartActivity extends AppCompatActivity {
                 editor.putInt("lovePlayListId", request.getInt("id"));
                 editor.apply();
 
-                Api.SendPost("https://newradiobacklast.herokuapp.com/abtest/add/" + userId.toString() + "/" + StaticProperty.ThemeAB + "/1");
+                Api.SendPost(StaticProperty.apiWeb + "/abtest/add/" + userId.toString() + "/" + StaticProperty.ThemeAB + "/1");
 
             } catch (JSONException e) {
                 e.printStackTrace();
