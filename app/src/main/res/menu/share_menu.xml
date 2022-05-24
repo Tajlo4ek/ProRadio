@@ -6,5 +6,5 @@
         android:title="Поделиться станцией" />
     <item
         android:id="@+id/item_share_playlist"
-        android:title="поделиться понравившимися" />
+        android:title="Поделиться понравившимися" />
 </menu>
